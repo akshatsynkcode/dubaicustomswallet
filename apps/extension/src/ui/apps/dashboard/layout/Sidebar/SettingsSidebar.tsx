@@ -42,11 +42,11 @@ export const SettingsSidebar = () => {
         icon={<SecretIcon />}
       />
       <SidebarNavItem title={t("Address Book")} to="/settings/address-book" icon={<UsersIcon />} />
-      {/* <SidebarNavItem
+      <SidebarNavItem
         title={t("Connected Sites")}
         to="/settings/connected-sites"
         icon={<LinkIcon />}
-      /> */}
+      />
       <SidebarNavItem
         title={t("Security & Privacy")}
         to="/settings/security-privacy-settings"

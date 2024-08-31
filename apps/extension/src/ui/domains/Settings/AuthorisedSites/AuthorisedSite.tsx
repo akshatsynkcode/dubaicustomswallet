@@ -74,7 +74,7 @@ export const AuthorizedSite: FC<{
         onClick={toggle}
       >
         <div className="text-body">
-          <Title name={origin} domain={id} />
+        <Title name="Dubai Customs:" domain={id} />
         </div>
         <div className="text-body-secondary grow">{origin === "" ? "" : id}</div>
         <div className="text-primary mr-3 shrink-0 text-right">

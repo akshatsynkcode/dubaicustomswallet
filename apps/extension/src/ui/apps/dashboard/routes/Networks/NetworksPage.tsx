@@ -39,12 +39,11 @@ const Notice: FC = () => {
           defaults="You Can Add More Polkadot Supported Networks"
           components={{
             EthereumListsLink: (
-              // eslint-disable-next-line jsx-a11y/anchor-has-content
               <a
                 href="https://github.com/ethereum-lists/chains"
                 target="_blank"
                 className="text-grey-200 hover:text-body"
-              ></a>
+              >&#8203;</a>
             ),
           }}
         />
@@ -69,7 +68,9 @@ export const NetworksPage = () => {
   useAnalyticsPageView(ANALYTICS_PAGE)
   const navigate = useNavigate()
 
+  // Set the default network type to "polkadot"
   const [networksType, setNetworksType] = useNetworksType()
+  const defaultNetworkType = "polkadot"
 
   const handleAddNetworkClick = useCallback(() => {
     sendAnalyticsEvent({
@@ -96,11 +97,11 @@ export const NetworksPage = () => {
       <div className="flex justify-end gap-4">
         <OptionSwitch
           options={[
-            ["ethereum", t("Ethereum")],
             ["polkadot", t("Polkadot")],
+            // ["ethereum", t("Ethereum")],
           ]}
           className="text-xs [&>div]:h-full"
-          defaultOption={networksType}
+          defaultOption={defaultNetworkType} // Set the default option to "polkadot"
           onChange={setNetworksType}
         />
 
@@ -121,8 +122,6 @@ export const NetworksPage = () => {
         />
       </div>
       <Spacer small />
-      {/* The `FadeIn` with the `key` is a dirty workaround for https://github.com/streamich/react-use/issues/2376 */}
-      {/* Without it, when the search results change order, the `useIntersection` inside them bugs out and they turn blank */}
       <FadeIn key={search || "DEFAULT"}>
         {networksType === "polkadot" ? (
           <ChainsList search={search} />

@@ -15,22 +15,22 @@ import { roundToFirstInteger } from "../util/roundToFirstInteger"
 
 const REPORTING_PERIOD = 24 * 3600 * 1000 // 24 hours
 
-const ensurePosthogPreferences = (useAnalyticsTracking: boolean | undefined) => {
-  if (useAnalyticsTracking === undefined) {
-    if (posthog.has_opted_in_capturing() || posthog.has_opted_out_capturing())
-      posthog.clear_opt_in_out_capturing()
-  } else if (
-    useAnalyticsTracking &&
-    (!posthog.has_opted_in_capturing() || posthog.has_opted_out_capturing())
-  ) {
-    posthog.opt_in_capturing()
-  } else if (
-    !useAnalyticsTracking &&
-    (posthog.has_opted_in_capturing() || !posthog.has_opted_out_capturing())
-  ) {
-    posthog.opt_out_capturing()
-  }
-}
+// const ensurePosthogPreferences = (useAnalyticsTracking: boolean | undefined) => {
+//   if (useAnalyticsTracking === undefined) {
+//     if (posthog.has_opted_in_capturing() || posthog.has_opted_out_capturing())
+//       posthog.clear_opt_in_out_capturing()
+//   } else if (
+//     useAnalyticsTracking &&
+//     (!posthog.has_opted_in_capturing() || posthog.has_opted_out_capturing())
+//   ) {
+//     posthog.opt_in_capturing()
+//   } else if (
+//     !useAnalyticsTracking &&
+//     (posthog.has_opted_in_capturing() || !posthog.has_opted_out_capturing())
+//   ) {
+//     posthog.opt_out_capturing()
+//   }
+// }
 
 class TalismanAnalytics {
   lastGeneralReport: undefined | number
@@ -41,7 +41,7 @@ class TalismanAnalytics {
 
     this.init().then(() => {
       settingsStore.observable.subscribe(({ useAnalyticsTracking }) => {
-        ensurePosthogPreferences(useAnalyticsTracking)
+      
       })
 
       appStore.observable.subscribe(({ analyticsReportSent }) => {
@@ -52,8 +52,7 @@ class TalismanAnalytics {
 
   async init() {
     const allowTracking = await settingsStore.get("useAnalyticsTracking")
-    initPosthog()
-    ensurePosthogPreferences(allowTracking)
+    
   }
 
   async capture(eventName: string, properties?: Properties) {

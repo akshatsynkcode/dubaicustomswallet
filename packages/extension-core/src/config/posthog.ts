@@ -33,7 +33,7 @@ const talismanProperties = {
 export const initPosthog = () => {
   if (process.env.POSTHOG_AUTH_TOKEN) {
     posthog.init(process.env.POSTHOG_AUTH_TOKEN, {
-      api_host: "https://app.posthog.com",
+      api_host: "",
       autocapture: false,
       capture_pageview: false,
       disable_session_recording: true,
