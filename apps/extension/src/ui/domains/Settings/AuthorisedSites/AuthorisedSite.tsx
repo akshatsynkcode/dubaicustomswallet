@@ -68,16 +68,14 @@ export const AuthorizedSite: FC<{
 
   return (
     <div>
-      <button
-        type="button"
-        className=" text-body-secondary hover:text-body bg-grey-850 hover:bg-grey-800 flex h-24 w-full items-center gap-3 rounded-sm px-8 text-left"
-        onClick={toggle}
-      >
-        <div className="text-body">
+        <button
+          type="button"
+          className=" text-body-secondary hover:text-body bg-grey-850 hover:bg-grey-800 flex h-24 w-full items-center gap-3 rounded-sm px-8 text-left"
+          onClick={toggle}
+        >
         <div className="text-body connected-site-wrap flex items-center justify-center">
-        <img src="/favicon.svg" width="28" height="28" className="mr-4" alt="" />
-        <Title name="Dubai Customs:" domain={id} />
-        </div>
+          <img src="/favicon.svg" width="28" height="28" alt="" className="mr-3" />
+          <Title  name="Dubai Customs" domain={id} />
         </div>
         <div className="text-body-secondary grow">{origin === "" ? "" : id}</div>
         <div className="text-primary mr-3 shrink-0 text-right">
