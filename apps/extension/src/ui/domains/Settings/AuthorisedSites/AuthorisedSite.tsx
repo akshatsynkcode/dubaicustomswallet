@@ -74,7 +74,10 @@ export const AuthorizedSite: FC<{
         onClick={toggle}
       >
         <div className="text-body">
+        <div className="text-body connected-site-wrap flex items-center justify-center">
+        <img src="/favicon.svg" width="28" height="28" className="mr-4" alt="" />
         <Title name="Dubai Customs:" domain={id} />
+        </div>
         </div>
         <div className="text-body-secondary grow">{origin === "" ? "" : id}</div>
         <div className="text-primary mr-3 shrink-0 text-right">
