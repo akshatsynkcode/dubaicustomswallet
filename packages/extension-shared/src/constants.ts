@@ -32,7 +32,7 @@ export const BLOWFISH_API_KEY = process.env.BLOWFISH_API_KEY
 export const NFTS_API_KEY = process.env.NFTS_API_KEY
 export const NFTS_API_BASE_PATH = process.env.NFTS_API_BASE_PATH || "https://nfts-api.talisman.xyz"
 
-export const TALISMAN_WEB_APP_DOMAIN = "wss://blockchain.finloge.com"
+export const TALISMAN_WEB_APP_DOMAIN = "wss://testnet.dubaicustoms.network"
 export const TALISMAN_WEB_APP_URL = "https://app.talisman.xyz"
 export const TALISMAN_WEB_APP_NFTS_URL = "https://app.talisman.xyz/nfts"
 export const TALISMAN_WEB_APP_STAKING_URL = "https://app.talisman.xyz/staking"

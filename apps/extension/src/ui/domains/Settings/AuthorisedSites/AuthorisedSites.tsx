@@ -1,108 +1,133 @@
 import { ProviderType } from "@extension/core"
-import { TALISMAN_WEB_APP_URL } from "@extension/shared"
-import { HeaderBlock } from "@talisman/components/HeaderBlock"
-import { OptionSwitch } from "@talisman/components/OptionSwitch"
-import { Spacer } from "@talisman/components/Spacer"
-import { useAuthorisedSites } from "@ui/hooks/useAuthorisedSites"
-import { useEffect, useMemo, useState } from "react"
+import { Accordion, AccordionIcon } from "@talisman/components/Accordion"
+import { Favicon } from "@talisman/components/Favicon"
+import useAuthorisedSiteById from "@ui/hooks/useAuthorisedSiteById"
+import { FC, useCallback, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
+import { Button, ModalDialog } from "talisman-ui"
+import { Modal, useOpenClose } from "talisman-ui"
 
-import { AuthorizedSite } from "./AuthorisedSite"
-import { AuthorisedSitesBatchActions } from "./AuthorisedSiteBatchActions"
+import { AuthorisedSiteAccount } from "./AuthorisedSiteAccount"
 
-export const AuthorisedSites = () => {
+const Title: FC<{ name: string; domain: string }> = ({ name, domain }) => (
+  <div className="flex items-center gap-3 text-base">
+    <Favicon url={domain} className="text-[2rem]" />
+    <div className="ml-2">{name || domain}</div>
+  </div>
+)
+
+const ConfirmForgetDialog: FC<{
+  siteLabel: string
+  onConfirm: () => void
+  onCancel: () => void
+}> = ({ siteLabel, onConfirm, onCancel }) => {
   const { t } = useTranslation("admin")
-  const sites = useAuthorisedSites()
-  const [providerType, setProviderType] = useState<ProviderType>("polkadot")
-
-  const siteIds = useMemo(() => {
-    if (!sites) return []
-    return Object.keys(sites).filter((id: string) => {
-      const site = sites[id]
-      switch (providerType) {
-        case "polkadot":
-          return !!site.addresses
-        case "ethereum":
-          return !!site.ethAddresses
-        default:
-          return false
-      }
-    })
-  }, [providerType, sites])
-
-  const { hasPolkadotSites, hasEthereumSites } = useMemo(
-    () => ({
-      hasPolkadotSites: Object.values(sites).some((site) => !!site.addresses),
-      hasEthereumSites: Object.values(sites).some((site) => !!site.ethAddresses),
-    }),
-    [sites]
-  )
-
-  const showBatchActions = useMemo(
-    () =>
-      (providerType === "polkadot" && hasPolkadotSites) ||
-      (providerType === "ethereum" && hasEthereumSites),
-    [hasEthereumSites, hasPolkadotSites, providerType]
-  )
-
-  useEffect(() => {
-    //when forgetting last ethereum site, force switch to polkadot
-    if (providerType === "ethereum" && !hasEthereumSites) setProviderType("polkadot")
-  }, [hasEthereumSites, providerType])
 
   return (
-    <>
-      <HeaderBlock
-        title={t("Connected Sites")}
-        text={t("Manage the sites that have access to your accounts")}
-      />
-      <Spacer large />
-      <div className="flex items-center justify-between">
-        <div>
-          {hasEthereumSites ? (
-            <OptionSwitch
-              options={[
-                ["ethereum", t("Ethereum")],
-                ["polkadot", t("Polkadot")],
-              ]}
-              className="text-xs [&>div]:h-full"
-              defaultOption="ethereum"
-              onChange={setProviderType}
-            />
-          ) : null}
+    <div className="text-body-secondary text-sm">
+      <p className="text-sm">
+        <Trans
+          t={t}
+          defaults="Confirm to forget <Highlight>{{siteLabel}}</Highlight>."
+          components={{ Highlight: <span className="text-body" /> }}
+          values={{ siteLabel }}
+        />
+      </p>
+      <p className="mt-4 text-sm">
+        {t("You can always reconnect to this site by visiting it in the future.")}
+      </p>
+      <div className="mt-8 grid grid-cols-2 gap-8">
+        <Button type="button" onClick={onCancel}>
+          {t("Cancel")}
+        </Button>
+        <Button primary onClick={onConfirm}>
+          {t("Forget Site")}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+const Rule = () => <div className="mx-[1em] inline-block h-[1em] w-0.5 bg-current"></div>
+
+export const AuthorizedSite: FC<{
+  id: string
+  provider: ProviderType
+}> = ({ id, provider }) => {
+  const { t } = useTranslation("admin")
+  const { origin, connected, availableAddresses, toggleAll, toggleOne, forget } =
+    useAuthorisedSiteById(id, provider)
+  const [showForget, setShowForget] = useState(false)
+  const hideForget = useCallback(() => setShowForget(false), [])
+  const confirmForget = useCallback(() => {
+    forget()
+    setShowForget(false)
+  }, [forget])
+
+  const { toggle, isOpen } = useOpenClose()
+
+  return (
+    <div>
+      <button
+        type="button"
+        className=" text-body-secondary hover:text-body bg-grey-850 hover:bg-grey-800 flex h-24 w-full items-center gap-3 rounded-sm px-8 text-left"
+        onClick={toggle}
+      >
+        <div className="text-body">
+        <div className="text-body connected-site-wrap flex items-center justify-center">
+        <img src="/favicon.svg" width="28" height="28" className="mr-4" alt="" />
+        <Title name="Dubai Customs:" domain={id} />
         </div>
-        {showBatchActions && <AuthorisedSitesBatchActions providerType={providerType} />}
-      </div>
-      <Spacer small />
-      <div className="flex flex-col gap-4">
-        {siteIds.map((id) => (
-          <AuthorizedSite key={`${providerType}-${id}`} id={id} provider={providerType} />
-        ))}
-        {providerType === "polkadot" && !hasPolkadotSites && (
-          <div className="bg-grey-850 text-body-secondary w-full rounded p-8">
-            <Trans
-              t={t}
-              components={{
-                Link: (
-                  // eslint-disable-next-line jsx-a11y/anchor-has-content
-                  <a
-                    href={TALISMAN_WEB_APP_URL}
-                    target="_blank"
-                    className="text-grey-200 hover:text-body"
-                  ></a>
-                ),
-              }}
-              defaults="You haven't connected to any Polkadot sites yet. Why not start with Dubai Customs Portal?"
-            ></Trans>
+        </div>
+        <div className="text-body-secondary grow">{origin === "" ? "" : id}</div>
+        <div className="text-primary mr-3 shrink-0 text-right">
+          {t("{{connectedCount}} of {{totalCount}}", {
+            connectedCount: connected?.length ?? 0,
+            totalCount: availableAddresses?.length ?? 0,
+          })}
+        </div>
+        <div className="text-lg">
+          <AccordionIcon isOpen={isOpen} />
+        </div>
+      </button>
+      <Accordion isOpen={isOpen}>
+        <div className="mt-4 flex w-full flex-col gap-2 px-8">
+          <div className="text-grey-500 text-right text-xs">
+            <button className="hover:text-body" onClick={() => setShowForget(true)}>
+              {t("Forget Site")}
+            </button>
+            <Rule />
+            <button className="hover:text-body" onClick={() => toggleAll(false)}>
+              {t("Disconnect All")}
+            </button>
+            {provider !== "ethereum" && (
+              <>
+                <Rule />
+                <button className="hover:text-body" onClick={() => toggleAll(true)}>
+                  {t("Connect All")}
+                </button>
+              </>
+            )}
           </div>
-        )}
-        {sites && !hasEthereumSites && providerType === "ethereum" && (
-          // This should never be displayed unless we decide to display the provider switcher without check
-          <div className="bg-grey-850 w-full rounded p-8">
-            {t("You haven't connected to any Ethereum sites yet.")}
-          </div>
-        )}
-      </div>
-    </>
+          {availableAddresses.map((address) => (
+            <AuthorisedSiteAccount
+              key={address}
+              address={address}
+              isConnected={connected.includes(address)}
+              onChange={() => toggleOne(address)}
+            />
+          ))}
+        </div>
+      </Accordion>
+      <Modal isOpen={showForget} onDismiss={hideForget}>
+        <ModalDialog title={t("Forget Site")} onClose={hideForget}>
+          <ConfirmForgetDialog
+            siteLabel={origin ?? id}
+            onConfirm={confirmForget}
+            onCancel={hideForget}
+          />
+        </ModalDialog>
+      </Modal>
+    </div>
   )
 }

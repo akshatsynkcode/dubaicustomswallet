@@ -12,6 +12,7 @@ import {
   HelpCircleIcon,
   MapIcon,
   TalismanHandIcon,
+  EyeIcon
 } from "@talismn/icons"
 import { Trans, useTranslation } from "react-i18next"
 import { CtaButton } from "talisman-ui"
@@ -47,14 +48,14 @@ export const AboutPage = () => {
           title={t("Privacy Policy")}
           subtitle={t("Read our Privacy Policy")}
           to={PRIVACY_POLICY_URL}
-          // iconLeft={TalismanHandIcon}
+          iconLeft={EyeIcon}
           iconRight={ExternalLinkIcon}
         />
         <CtaButton
           title={t("Terms of Use")}
           subtitle={t("Read our Terms of Use")}
           to={TERMS_OF_USE_URL}
-          // iconLeft={MapIcon}
+          iconLeft={MapIcon}
           iconRight={ExternalLinkIcon}
         />
         {/* <CtaButton

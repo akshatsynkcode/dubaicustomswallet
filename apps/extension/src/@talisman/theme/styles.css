@@ -50,3 +50,7 @@
 {
   height:150px;
 }
+
+.text-body.connected-site-wrap .rounded-full{
+  display: none;
+}
