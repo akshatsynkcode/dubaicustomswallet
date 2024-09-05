@@ -6,7 +6,7 @@ const CopyPlugin = require("copy-webpack-plugin")
 const ZipPlugin = require("./plugins/ZipPlugin")
 const TerserPlugin = require("terser-webpack-plugin")
 const CircularDependencyPlugin = require("circular-dependency-plugin")
-const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin
+// const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin
 
 const common = require("./webpack.common.js")
 const {
@@ -15,22 +15,22 @@ const {
   updateManifestDetails,
   getArchiveFileName,
   manifestDir,
-  getSentryPlugin,
   dropConsole,
 } = require("./utils")
 const { SourceMapDevToolPlugin } = require("webpack")
-const SimpleLocalizeDownloadPlugin = require("./plugins/SimpleLocalizeDownloadPlugin")
+// const SimpleLocalizeDownloadPlugin = require("./plugins/SimpleLocalizeDownloadPlugin")
 
 const faviconsSrcPath = path.join(__dirname, "..", "public", "favicon*.*")
 
 /** @type { import('webpack').Configuration } */
 const config = (env) => {
-  if (env.build === "production") {
-    // if (!process.env.POSTHOG_AUTH_TOKEN) {
-    //   console.warn("Missing POSTHOG_AUTH_TOKEN env variable")
-    //   throw new Error("Missing POSTHOG_AUTH_TOKEN env variable")
-    // }
-  }
+  // Removed the PostHog token check to avoid potential third-party integration.
+  // if (env.build === "production") {
+  //   // if (!process.env.POSTHOG_AUTH_TOKEN) {
+  //   //   console.warn("Missing POSTHOG_AUTH_TOKEN env variable")
+  //   //   throw new Error("Missing POSTHOG_AUTH_TOKEN env variable")
+  //   // }
+  // }
 
   return merge(common(env), {
     devtool: false,
@@ -40,8 +40,8 @@ const config = (env) => {
         filename: "[file].map[query]",
         exclude: ["content_script.js", "page.js"],
       }),
-      // Ensure plugins in this array will not change source in any way that will affect source maps
-      getSentryPlugin(env),
+      // Removed Sentry plugin as it may interact with third-party services.
+      // getSentryPlugin(env),
       new CopyPlugin({
         patterns: [
           {
@@ -66,10 +66,8 @@ const config = (env) => {
             from: ".",
             to: distDir,
             context: "public",
-            // do not copy the manifest or the favicons, they're handled separately
             globOptions: {
               ignore: [manifestDir, faviconsSrcPath].concat(
-                // service worker should be excluded for firefox
                 browser === "firefox" ? ["service_worker.js"] : []
               ),
             },
@@ -77,27 +75,21 @@ const config = (env) => {
         ],
       }),
       new CircularDependencyPlugin({
-        // exclude detection of files based on a RegExp
         exclude: /node_modules/,
-        // add errors to webpack instead of warnings
         failOnError: false,
-        // allow import cycles that include an asyncronous import,
-        // e.g. via import(/* webpackMode: "weak" */ './file.js')
         allowAsyncCycles: false,
-        // set the current working directory for displaying module paths
         cwd: process.cwd(),
       }),
-      new SimpleLocalizeDownloadPlugin(),
-      // Do not include source maps in the zip file
+      // Removed SimpleLocalizeDownloadPlugin to avoid any potential external API calls.
+      // new SimpleLocalizeDownloadPlugin(),
       new ZipPlugin({
         folder: distDir,
         filename: getArchiveFileName(env),
       }),
-      new BundleAnalyzerPlugin({
-        // analyzerMode defaults to server, spawning a http server which can hang the process
-        // static will instead output a static html file to the dist folder, and not hang the terminal
-        analyzerMode: env.build === "ci" ? "disabled" : "static",
-      }),
+      // Removed BundleAnalyzerPlugin as it might involve third-party connections.
+      // new BundleAnalyzerPlugin({
+      //   analyzerMode: env.build === "ci" ? "disabled" : "static",
+      // }),
     ].filter(Boolean),
     optimization: {
       minimize: true,
@@ -106,7 +98,6 @@ const config = (env) => {
           terserOptions: {
             compress: {
               defaults: true,
-              // Drop any calls to console.error/warn/log/debug from production/canary builds, and when running tests
               drop_console: dropConsole(env) ? ["error", "warn", "log", "debug"] : false,
             },
           },

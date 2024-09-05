@@ -1,5 +1,6 @@
-import { DEBUG } from "extension-shared"
-import posthog, { Properties } from "posthog-js"
+import { DEBUG } from "extension-shared";
+
+// Removed posthog and Properties imports
 
 const unsafeProperties = [
   "$os",
@@ -22,34 +23,13 @@ const unsafeProperties = [
   "$referring_domain",
   "$session_id",
   "$window_id",
-]
+];
 
+// If talismanProperties is used elsewhere, you may need to keep it, otherwise remove it.
 const talismanProperties = {
   appVersion: process.env.VERSION,
   appBuild: process.env.BUILD,
   testBuild: DEBUG || ["dev", "qa", "ci"].includes(process.env.BUILD as string),
-}
+};
 
-export const initPosthog = () => {
-  if (process.env.POSTHOG_AUTH_TOKEN) {
-    posthog.init(process.env.POSTHOG_AUTH_TOKEN, {
-      api_host: "",
-      autocapture: false,
-      capture_pageview: false,
-      disable_session_recording: true,
-      persistence: "localStorage",
-      ip: false,
-      sanitize_properties: (properties) => {
-        // We can remove all the posthog user profiling properties except for those that are required for PostHog to work
-        const requiredProperties = Object.keys(properties).reduce((result, key) => {
-          if (!unsafeProperties.includes(key)) result[key] = properties[key]
-          return result
-        }, {} as Properties)
-        return {
-          ...requiredProperties,
-          ...talismanProperties,
-        }
-      },
-    })
-  }
-}
+// Removed initPosthog function

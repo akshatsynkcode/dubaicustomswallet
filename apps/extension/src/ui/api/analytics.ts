@@ -1,5 +1,3 @@
-import { Properties } from "posthog-js"
-
 import { api } from "./api"
 
 export type AnalyticsEventName = "Pageview" | "Goto" | "GotoExternal" | "Interact" | "Submit"
@@ -26,7 +24,7 @@ export type AnalyticsEvent = AnalyticsPage & {
   name: AnalyticsEventName
   action?: string
   site?: string
-  properties?: Properties
+  properties?: Record<string, unknown> // Using `unknown` instead of `any` for better type safety
 }
 
 export const sendAnalyticsEvent = (event: AnalyticsEvent) => {

@@ -2,7 +2,6 @@ import keyring from "@polkadot/ui-keyring"
 import { DEBUG } from "extension-shared"
 import posthog, { Properties } from "posthog-js"
 
-import { initPosthog } from "../config/posthog"
 import { db } from "../db"
 import { AccountType } from "../domains/accounts/types"
 import { appStore } from "../domains/app/store.app"

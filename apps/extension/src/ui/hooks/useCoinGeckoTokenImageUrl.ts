@@ -1,5 +1,5 @@
 import { getCoingeckoToken } from "@extension/core"
-import { getCoingeckoTokensList } from "@extension/core"
+// import { getCoingeckoTokensList } from "@extension/core"
 import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 
@@ -11,7 +11,7 @@ export const useCoinGeckoTokenImageUrl = (coingeckoTokenId: string | null) => {
     refetchInterval: false,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    queryFn: () => getCoingeckoTokensList(),
+    // queryFn: () => getCoingeckoTokensList(),
   })
 
   const qToken = useQuery({
